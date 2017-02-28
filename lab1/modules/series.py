@@ -1,5 +1,4 @@
 from __future__ import division
-from decimal import Decimal
 
 # Series module
 

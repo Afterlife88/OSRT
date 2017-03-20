@@ -133,3 +133,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# db files
+*.db
+*.db-journal

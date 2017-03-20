@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-import utils.create as create
+import utils.queries as queries
 from utils.decorators.exceptions_handler import exceptions_handler
 from utils.singleton import Singleton
 
@@ -22,22 +22,30 @@ class Db:
             print('Database file already exists')
             self.connect_db()
         else:
-            print('Database file does not exist. Creating new database')
-            self.create()
+            print('Database file does not exist. Will create new database')
+            self.connect_db()
+            self.fill_db()
 
     @exceptions_handler
     def connect_db(self):
         print('Connecting to database "%s"' % self.db_name)
         self.conn = sqlite3.connect(self.db_name)
         self.cursor = self.conn.cursor()
+        print('Creating tables that do not exist')
+        self.execute(queries.get_create())
 
     @exceptions_handler
-    def create(self):
-        self.connect_db()
-        print('Creating database "%s"' % self.db_name)
-        self.execute(create.get_command())
+    def fill_db(self):
+        print('Filling database with data')
+        self.execute(queries.get_insert())
 
     @exceptions_handler
-    def execute(self, query):
-        print('Executing query:\n%s' % query)
-        return self.cursor.execute(query)
+    def execute(self, queries):
+        if not isinstance(queries, list):
+            queries = [queries]
+
+        for query in queries:
+            print('Executing query:\n%s' % query)
+            result = self.cursor.execute(query)
+
+        return result
